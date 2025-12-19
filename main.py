@@ -4,9 +4,9 @@ import datetime
 import hashlib
 from datetime import datetime
 from decimal import Decimal, ROUND_HALF_UP
-import mysql.connector
 from datetime import datetime, timedelta
-
+from decimal import Decimal, ROUND_HALF_UP
+import pymysql
 DB_CONFIG = {
     "host": "192.168.5.27",
     "port": 3306,
@@ -16,20 +16,12 @@ DB_CONFIG = {
     "autocommit": False,
     "charset": "utf8mb4",
     "use_unicode": True,
-    "use_pure": True,  
+    "use_pure": True,
 }
 
-def save_neterr_events(events: list[tuple]):
-    """
-    events:
-    (
-        created_date: datetime,
-        errors_count: int,
-        failures_count: float,
-        regin_id: int
-    )
-    """
 
+
+def save_neterr_events(events):
     sql = """
     INSERT INTO neterr_events
     (regin_id, created_date, errors_count, failures_count)
@@ -39,7 +31,7 @@ def save_neterr_events(events: list[tuple]):
         failures_count = VALUES(failures_count);
     """
 
-    conn = mysql.connector.connect(**DB_CONFIG)
+    conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor()
 
     data = []
@@ -66,7 +58,6 @@ def save_neterr_events(events: list[tuple]):
     finally:
         cursor.close()
         conn.close()
-
 
 events = [
         (
