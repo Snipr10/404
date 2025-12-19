@@ -155,4 +155,4 @@ for e, v in errors.items():
 #         ),
 #     ]
 
-save_neterr_events(list(result.values()))
+save_neterr_events([item for sublist in result.values() for item in sublist])
