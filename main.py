@@ -14,6 +14,8 @@ DB_CONFIG = {
     "password": "9ExtUS8uRyF9FSDf",
     "database": "parser",
     "autocommit": False,
+    "charset": "utf8mb4",
+    "use_unicode": True,
 }
 
 def save_neterr_events(events: list[tuple]):
