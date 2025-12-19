@@ -16,6 +16,7 @@ DB_CONFIG = {
     "autocommit": False,
     "charset": "utf8mb4",
     "use_unicode": True,
+    "use_pure": True,  
 }
 
 def save_neterr_events(events: list[tuple]):
