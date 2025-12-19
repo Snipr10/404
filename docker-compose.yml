@@ -1,6 +1,7 @@
 version: "3.9"
 services:
 
-  main_news:
+  main:
+    build: ./
     command: python3 main.py
     restart: always
