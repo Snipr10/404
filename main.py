@@ -1,3 +1,5 @@
+import time
+
 import execjs
 import requests
 import datetime
@@ -122,37 +124,43 @@ headers = {
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Linux"'
 }
-with open("your_script.js", "r") as f:
-    js_code = f.read()
-ctx = execjs.compile(js_code)
-errors = {}
-tokens = {}
-for url in urls:
-    response = requests.request("GET", f"https://detector404.ru/data.js?service={url}", headers=headers, data=payload)
-    datas = response.text.split(".push(")
-    errors.update(ctx.call("assertValue", datas[1][1:].split('");')[0]))
-    tokens.update(ctx.call("assertValue", datas[2][1:].split('");')[0]))
 
-result = {}
-now = datetime.now()
-
-for e, v in errors.items():
-    result[e] = errors_with_periods(tokens.get(e), v, now, get_sphinx_id(e))
-
-
-# events = [
-#         (
-#             datetime(2025, 12, 19, 19, 0),
-#             12,
-#             2.9188355504144976,
-#             16639457515485987309
-#         ),
-#         (
-#             datetime(2025, 12, 19, 18, 45),
-#             5,
-#             1.1,
-#             16639457515485987309
-#         ),
-#     ]
-
-save_neterr_events([item for sublist in result.values() for item in sublist])
+try:
+    while True:
+        with open("your_script.js", "r") as f:
+            js_code = f.read()
+        ctx = execjs.compile(js_code)
+        errors = {}
+        tokens = {}
+        for url in urls:
+            response = requests.request("GET", f"https://detector404.ru/data.js?service={url}", headers=headers, data=payload)
+            datas = response.text.split(".push(")
+            errors.update(ctx.call("assertValue", datas[1][1:].split('");')[0]))
+            tokens.update(ctx.call("assertValue", datas[2][1:].split('");')[0]))
+        
+        result = {}
+        now = datetime.now()
+        
+        for e, v in errors.items():
+            result[e] = errors_with_periods(tokens.get(e), v, now, get_sphinx_id(e))
+        
+        
+        # events = [
+        #         (
+        #             datetime(2025, 12, 19, 19, 0),
+        #             12,
+        #             2.9188355504144976,
+        #             16639457515485987309
+        #         ),
+        #         (
+        #             datetime(2025, 12, 19, 18, 45),
+        #             5,
+        #             1.1,
+        #             16639457515485987309
+        #         ),
+        #     ]
+        
+        save_neterr_events([item for sublist in result.values() for item in sublist])
+        time.sleep(60*8)
+except Exception:
+    time.sleep(60 * 8)
