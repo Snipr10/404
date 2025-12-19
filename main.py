@@ -13,11 +13,10 @@ DB_CONFIG = {
     "user": "parser",
     "password": "9ExtUS8uRyF9FSDf",
     "database": "parser",
-    "autocommit": False,
     "charset": "utf8mb4",
-    "use_unicode": True,
-    "use_pure": True,
+    "autocommit": False,
 }
+
 
 
 
