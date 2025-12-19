@@ -64,7 +64,7 @@ def save_neterr_events(events):
 def get_sphinx_id(name):
     m = hashlib.md5()
     m.update(name.encode())
-    return int(str(int(m.hexdigest()[:16], 16)))
+    return int(str(int(m.hexdigest()[:10], 16)))
 
 
 def round_down_to_15(dt: datetime) -> datetime:
