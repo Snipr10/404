@@ -1,5 +1,5 @@
 import time
-
+from zoneinfo import ZoneInfo
 import execjs
 import requests
 import datetime
@@ -139,8 +139,8 @@ try:
             tokens.update(ctx.call("assertValue", datas[2][1:].split('");')[0]))
         
         result = {}
-        now = datetime.now()
-        
+        now = datetime.now(ZoneInfo("Europe/Moscow"))
+
         for e, v in errors.items():
             result[e] = errors_with_periods(tokens.get(e), v, now, get_sphinx_id(e))
         
