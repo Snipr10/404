@@ -186,9 +186,11 @@ try:
         #             16639457515485987309
         #         ),
         #     ]
-        
+        print(1)
         save_neterr_events([item for sublist in result.values() for item in sublist])
-        save_neterr_regins([item for sublist in result.values() for item in sublist])
+        print(1)
+
+        save_neterr_regins(regions)
         time.sleep(60 * 8)
 except Exception:
     time.sleep(60 * 8)
