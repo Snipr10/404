@@ -20,6 +20,31 @@ DB_CONFIG = {
 }
 
 
+def save_neterr_regins(regins):
+    """
+    regins: Iterable[Tuple[str, int]]
+            (876696188617, '[78] Санкт-Петербург')
+    """
+
+    sql = """
+    INSERT INTO neterr_regins (id, title)
+    VALUES (%s, %s)
+    ON DUPLICATE KEY UPDATE
+        title = VALUES(title);
+    """
+
+    conn = pymysql.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+
+    try:
+        cursor.executemany(sql, regins)
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def save_neterr_events(events):
@@ -59,8 +84,6 @@ def save_neterr_events(events):
     finally:
         cursor.close()
         conn.close()
-
-
 
 
 def get_sphinx_id(name):
@@ -133,18 +156,22 @@ try:
         errors = {}
         tokens = {}
         for url in urls:
-            response = requests.request("GET", f"https://detector404.ru/data.js?service={url}", headers=headers, data=payload)
+            response = requests.request("GET", f"https://detector404.ru/data.js?service={url}", headers=headers,
+                                        data=payload)
             datas = response.text.split(".push(")
             errors.update(ctx.call("assertValue", datas[1][1:].split('");')[0]))
             tokens.update(ctx.call("assertValue", datas[2][1:].split('");')[0]))
-        
+
         result = {}
         now = datetime.now(ZoneInfo("Europe/Moscow"))
+        regions = []
 
         for e, v in errors.items():
-            result[e] = errors_with_periods(tokens.get(e), v, now, get_sphinx_id(e))
-        
-        
+            reg_sphinx = get_sphinx_id(e)
+
+            result[e] = errors_with_periods(tokens.get(e), v, now, reg_sphinx)
+            regions.append((reg_sphinx, e))
+
         # events = [
         #         (
         #             datetime(2025, 12, 19, 19, 0),
@@ -161,6 +188,7 @@ try:
         #     ]
         
         save_neterr_events([item for sublist in result.values() for item in sublist])
-        time.sleep(60*8)
+        save_neterr_regins([item for sublist in result.values() for item in sublist])
+        time.sleep(60 * 8)
 except Exception:
     time.sleep(60 * 8)
